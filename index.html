@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Photosphere 2</title>
+  <style media="screen">
+    body {
+      margin: 0;
+      overflow: scroll-y;
+    }
+    #fovslider {
+      position: absolute;
+      z-index: 2;
+      right: 2em;
+      bottom: 2em;
+    }
+  </style>
+</head>
+<body>
+  <input type="range" id="fovslider" value="75" min="5" max="175" step="1">
+  <script src="three.min.js"></script>
+  <script src="OrbitControls.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
