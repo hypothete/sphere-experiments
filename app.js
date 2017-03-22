@@ -3,28 +3,57 @@
   var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10 );
   var renderer = new THREE.WebGLRenderer();
   var fovSlider = document.querySelector('#fovslider');
+  var vertOffset = document.querySelector('#verticaloffset');
+  var togglegeo = document.querySelector('#togglegeo');
   var can = document.createElement('canvas');
   var ctx = can.getContext('2d');
   var cantex = new THREE.Texture(can);
-  var stg = document.createElement('canvas');
-  var stx = stg.getContext('2d');
-  var cantex = new THREE.Texture(can);
   var ts = 0;
+  var vert = document.querySelector('#mapvertshader');
+  var frag = document.querySelector('#mapfragshader');
+  var mapName = 'image5.jpg';
 
   renderer.setSize( window.innerWidth, window.innerHeight );
   document.body.appendChild( renderer.domElement );
-  can.width = stg.width = 4096;
-  can.height = stg.height = 2048;
-  document.body.appendChild( can );
+
+  can.width = 4096;
+  can.height = 2048;
+  cantex.wrapS = cantex.wrapT = THREE.RepeatWrapping;
 
   var sphereGeo = new THREE.SphereBufferGeometry(1,64,64);
-  var sphereMat = new THREE.MeshBasicMaterial({side:THREE.BackSide,map:cantex});
-  var sphere = new THREE.Mesh(sphereGeo, sphereMat);
+  var planeGeo = new THREE.PlaneBufferGeometry( 2, 1, 4 );
+
+  var shaderMat = new THREE.ShaderMaterial({
+    side:THREE.BackSide,
+    uniforms: {
+      map: { value: cantex },
+      voffset: { value: Number(vertOffset.value) }
+    },
+    vertexShader: vert.textContent,
+    fragmentShader: frag.textContent
+  });
+
+  vertOffset.oninput = function(){
+    //debugger;
+    shaderMat.uniforms.voffset.value = Number(vertOffset.value);
+    shaderMat.needsUpdate = true;
+  };
+
+  togglegeo.onclick = function () {
+    sphere.visible = !sphere.visible;
+    plane.visible = !plane.visible;
+  };
+
+  var sphere = new THREE.Mesh(sphereGeo, shaderMat);
+  var plane = new THREE.Mesh(planeGeo, shaderMat);
+
+  plane.visible = false;
 
   var controls = new THREE.OrbitControls(camera, renderer.domElement);
   camera.position.z = -0.001;
+  plane.position.z++;
 
-  scene.add(sphere, camera);
+  scene.add(sphere, plane, camera);
   controls.enableDamping = true;
   controls.dampingFactor = 0.2;
   controls.enableZoom = false;
@@ -40,23 +69,16 @@
   function loadCanvas () {
     var channel0 = new Image();
     channel0.onload = function () {
-      stx.drawImage(channel0,0,0,stg.width,stg.height);
+      ctx.drawImage(channel0,0,0,can.width,can.height);
+      cantex.needsUpdate = true;
     };
-    channel0.src = 'image5.jpg';
-  }
-
-  function drawCanvas(){
-    var wave = can.height*0.5*Math.sin(ts/800)|0;
-    for (var i = -1; i < 2; i++) {
-      ctx.drawImage(stg,0,wave+(i*can.height));
-    }
-    cantex.needsUpdate = true;
+    channel0.src = mapName;
   }
 
   function render() {
     requestAnimationFrame(render);
     controls.update();
-    drawCanvas();
+    //drawCanvas();
     renderer.render(scene, camera);
     ts++;
   }

@@ -9,7 +9,7 @@
       margin: 0;
       overflow: scroll-y;
     }
-    #fovslider {
+    #controls {
       position: absolute;
       z-index: 2;
       right: 2em;
@@ -18,9 +18,45 @@
   </style>
 </head>
 <body>
-  <input type="range" id="fovslider" value="75" min="5" max="175" step="1">
+  <div id="controls">
+    <input type="range" id="fovslider" value="75" min="5" max="175" step="1">
+    <input type="range" id="verticaloffset" value="0" min="-1" max="1" step="0.01">
+    <button id="togglegeo">toggle geo</button>
+  </div>
+
   <script src="three.min.js"></script>
   <script src="OrbitControls.js"></script>
+  <script id="mapvertshader" type="x-shader/x-vertex">
+    #define E  2.71828
+    #define PI 3.14159
+    varying vec2 vUv;
+    uniform float voffset;
+    void main()
+    {
+      vUv = vec2(1.0-uv.x,uv.y);
+
+      //this flips the map horizontally
+      //vUv = vec2(uv.x,2.0*atan(pow(E,uv.y))-PI/2.0 );
+
+      //this rotates the map 90 degrees counterclockwise
+      //vUv = vec2(2.0*atan(pow(E,uv.y))-PI/2.0,uv.x);
+
+      // add voffset control
+      vUv.x += voffset;
+
+      vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  </script>
+  <script id="mapfragshader" type="x-shader/x-fragment">
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D map;
+    void main(void) {
+      vec3 mapColor = texture2D(map, vUv).rgb;
+      gl_FragColor = vec4(mapColor,1.0);
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>
