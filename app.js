@@ -11,17 +11,17 @@
   var ts = 0;
   var vert = document.querySelector('#mapvertshader');
   var frag = document.querySelector('#mapfragshader');
-  var mapName = 'image5.jpg';
+  var mapName = 'testpattern.jpg';
 
   renderer.setSize( window.innerWidth, window.innerHeight );
   document.body.appendChild( renderer.domElement );
 
   can.width = 4096;
   can.height = 2048;
-  cantex.wrapS = cantex.wrapT = THREE.RepeatWrapping;
+  cantex.wrapS = cantex.wrapT = THREE.MirroredRepeatWrapping;
 
   var sphereGeo = new THREE.SphereBufferGeometry(1,64,64);
-  var planeGeo = new THREE.PlaneBufferGeometry( 2, 1, 4 );
+  var planeGeo = new THREE.PlaneBufferGeometry( 2, 1, 1 );
 
   var shaderMat = new THREE.ShaderMaterial({
     side:THREE.BackSide,
