@@ -11,7 +11,7 @@
   var ts = 0;
   var vert = document.querySelector('#mapvertshader');
   var frag = document.querySelector('#mapfragshader');
-  var mapName = 'testpattern.jpg';
+  var mapName = 'timezones.jpg';
 
   renderer.setSize( window.innerWidth, window.innerHeight );
   document.body.appendChild( renderer.domElement );
@@ -20,7 +20,7 @@
   can.height = 2048;
   cantex.wrapS = cantex.wrapT = THREE.MirroredRepeatWrapping;
 
-  var sphereGeo = new THREE.SphereBufferGeometry(1,64,64);
+  var sphereGeo = new THREE.SphereBufferGeometry(0.5,64,64);
   var planeGeo = new THREE.PlaneBufferGeometry( 2, 1, 1 );
 
   var shaderMat = new THREE.ShaderMaterial({
